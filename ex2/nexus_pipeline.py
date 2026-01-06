@@ -43,7 +43,7 @@ class InputStage:
         print("Stage 1: Input validation and parsing")
         try:
             if not self.validate_data(data):
-                return {"error:": "Invalid data", "stage": "input"}
+                return {"error": "Invalid data", "stage": "input"}
             
             processed_data = {
                 "input" : data,
