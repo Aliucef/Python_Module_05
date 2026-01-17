@@ -1,19 +1,20 @@
-
 from abc import ABC, abstractmethod
 from typing import Any
 
-def ft_sum(data):
-    total = 0
+
+def ft_sum(data) -> int | float:
+    total: int | float = 0
     for d in data:
         total += d
     return total
 
 
-def ft_len(data):
-    count = 0
-    for l in data:
+def ft_len(data) -> int:
+    count: int = 0
+    for i in data:
         count += 1
     return count
+
 
 class DataProcessor(ABC):
 
@@ -28,26 +29,29 @@ class DataProcessor(ABC):
     def format_output(self, result: str) -> str:
         return f"Output: {result}"
 
+
 class NumericProcessor(DataProcessor):
 
-    def process(self, data):
+    def process(self, data: Any) -> str:
         print("Initializing Numeric Processor...")
         print(f"Processing data: {data}")
 
         try:
             if not self.validate(data):
                 return "Invalid numeric data"
-            total = ft_sum(data)
-            avg = total / ft_len(data)
-            return f"Processed {ft_len(data)} numeric values, sum={total}, avg={avg}"
+            total: int | float = ft_sum(data)
+            avg: float = total / ft_len(data)
+            return (f"Processed {ft_len(data)} numeric values,",
+                    f" sum={total}, avg={avg}")
 
         except Exception:
             return "Invalid numeric data"
+
     def validate(self, data: Any) -> bool:
         try:
-            count = 0
+            count: int = 0
             for item in data:
-                i = item + 0   # forces numeric behavior
+                item + 0
                 count += 1
 
             if count == 0:
@@ -62,40 +66,40 @@ class NumericProcessor(DataProcessor):
 
 class TextProcessor(DataProcessor):
 
-    def process(self, data):
+    def process(self, data: Any) -> str:
         print("Initializing Text Processor...")
         print(f"Processing data: \"{data}\"")
-
 
         try:
             if not self.validate(data):
                 return "Invalid text data"
 
-            words_count = 0
-            letters_count = 0
-            is_in_word = False
+            words_count: int = 0
+            letters_count: int = 0
+            is_in_word: bool = False
 
             for letters in data:
                 letters_count += 1
                 if letters == " ":
                     if is_in_word:
                         is_in_word = False
-                        words_count +=1
+                        words_count += 1
                 else:
                     is_in_word = True
             if is_in_word:
-                words_count +=1
+                words_count += 1
 
-            return f"Processed text: {letters_count} characters, {words_count} words"
+            return (f"Processed text: {letters_count}",
+                    f"characters, {words_count} words")
 
         except Exception:
             return "invalid Text data"
 
     def validate(self, data: Any) -> bool:
         try:
-            count = 0
+            count: int = 0
             for c in data:
-                _ = "" + c #force char behavior
+                _: str = "" + c
                 count += 1
             if count == 0:
                 return False
@@ -105,89 +109,89 @@ class TextProcessor(DataProcessor):
         except Exception:
             return False
 
-# class LogProcessor(DataProcessor):
 
-#     def process(self, data):
-#         print("Initializing Log Processor...")
-#         print(f'Processing data: "{data}"')
+class LogProcessor(DataProcessor):
 
-#         try:
-#             if not self.validate(data):
-#                 return "Invalid log data"
+    def process(self, data: Any) -> str:
+        print("Initializing Log Processor...")
+        print(f'Processing data: "{data}"')
 
-#             # Extract prefix before first ':'
-#             prefix = ""
-#             message_started = False
-#             for c in data:
-#                 if c == ":":
-#                     message_started = True
-#                     break
-#                 prefix += "" + c  # force string behavior
+        try:
+            if not self.validate(data):
+                return "Invalid log data"
 
-#             # Extract message after ':'
-#             message = ""
-#             if message_started:
-#                 after_colon = False
-#                 for c in data:
-#                     if not after_colon:
-#                         if c == ":":
-#                             after_colon = True
-#                         continue
-#                     message += "" + c
+            prefix: str = ""
+            message_started: bool = False
+            for c in data:
+                if c == ":":
+                    message_started = True
+                    break
+                prefix += "" + c
 
-#                 # Remove leading space manually
-#                 msg = ""
-#                 leading = True
-#                 for ch in message:
-#                     if leading and ch == " ":
-#                         continue
-#                     leading = False
-#                     msg += ch
-#                 message = msg
-#             else:
-#                 message = ""  # no colon found
+            message: str = ""
+            if message_started:
+                after_colon: bool = False
+                for c in data:
+                    if not after_colon:
+                        if c == ":":
+                            after_colon = True
+                        continue
+                    message += "" + c
 
-#             # Match log level exactly
-#             if prefix == "ERROR":
-#                 return f"[ALERT] ERROR level detected: {message}"
-#             elif prefix == "INFO":
-#                 return f"[INFO] INFO level detected: {message}"
-#             elif prefix == "WARNING":
-#                 return f"[WARN] WARNING level detected: {message}"
-#             else:
-#                 return f"[LOG] {prefix} detected: {message}"
+                msg: str = ""
+                leading: bool = True
+                for ch in message:
+                    if leading and ch == " ":
+                        continue
+                    leading = False
+                    msg += ch
+                message = msg
+            else:
+                message = ""
 
-#         except Exception:
-#             return "Invalid log data"
+            if prefix == "ERROR":
+                return f"[ALERT] ERROR level detected: {message}"
+            elif prefix == "INFO":
+                return f"[INFO] INFO level detected: {message}"
+            elif prefix == "WARNING":
+                return f"[WARN] WARNING level detected: {message}"
+            else:
+                return f"[LOG] {prefix} detected: {message}"
 
-#     def validate(self, data: Any) -> bool:
-#         try:
-#             count = 0
-#             for c in data:
-#                 _ = "" + c
-#                 count += 1
-#             if count == 0:
-#                 return False
+        except Exception:
+            return "Invalid log data"
 
-#             print("Validation: Log entry verified")
-#             return True
-#         except Exception:
-#             return False
+    def validate(self, data: Any) -> bool:
+        try:
+            count: int = 0
+            for c in data:
+                _: str = "" + c
+                count += 1
+            if count == 0:
+                return False
+
+            print("Validation: Log entry verified")
+            return True
+        except Exception:
+            return False
+
 
 if __name__ == "__main__":
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===")
 
-    processors = [NumericProcessor(), TextProcessor(), LogProcessor()]
-    data_samples = [[1, 2, 3], "Hello Nexus", "INFO: System ready"]
+    processors: list[DataProcessor] = [
+        NumericProcessor(), TextProcessor(), LogProcessor()]
+    data_samples: list[list[int] | str] = [
+        [1, 2, 3], "Hello Nexus", "INFO: System ready"]
 
     print("=== Polymorphic Processing Demo ===")
     print("Processing multiple data types through same interface...")
 
-    i = 0
+    i: int = 0
     while i < ft_len(processors):
-        processor = processors[i]
-        data = data_samples[i]
-        result = processor.process(data)
+        processor: DataProcessor = processors[i]
+        data: list[int] | str = data_samples[i]
+        result: str = processor.process(data)
         print(f"Result {i + 1}: {result}\n")
         i += 1
 

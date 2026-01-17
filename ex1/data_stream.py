@@ -1,13 +1,16 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Dict, Union, Optional
 
+
 class DataStream(ABC):
 
     @abstractmethod
     def process_batch(self, data_batch: List[Any]) -> str:
         pass
 
-    def filter_data(self, data_batch: List[Any], criteria: Optional[str] = None) -> List[Any]:
+    def filter_data(
+            self, data_batch: List[Any],
+            criteria: Optional[str] = None) -> List[Any]:
         try:
             if criteria:
                 return [item for item in data_batch if criteria in str(item)]
@@ -21,6 +24,7 @@ class DataStream(ABC):
         except Exception:
             return {}
 
+
 class SensorStream(DataStream):
     def __init__(self, stream_id: str):
         self.stream_id = stream_id
@@ -28,7 +32,7 @@ class SensorStream(DataStream):
         self.total_readings = 0
 
     def process_batch(self, data_batch: List[Any]) -> str:
-        print(f"\nInitializing Sensor Stream...")
+        print("\nInitializing Sensor Stream...")
         print(f"Stream ID: {self.stream_id}, Type: {self.stream_type}")
         print(f"Processing sensor batch: {data_batch}")
 
@@ -50,11 +54,12 @@ class SensorStream(DataStream):
             total = sum(values) if values else 0
             self.total_readings = self.total_readings + count
             avg = total / count if count > 0 else 0
-            return f"Sensor analysis: {count} readings processed, avg temp: {avg}°C"
+            return (f"Sensor analysis: {count} ",
+                    f"readings processed, avg temp: {avg}°C")
 
         except Exception:
             return "Sensor analysis: invalid data"
-    
+
     def get_stats(self) -> Dict[str, Union[str, int, float]]:
         try:
             return {
@@ -65,6 +70,7 @@ class SensorStream(DataStream):
             }
         except Exception:
             return {}
+
 
 class TransactionStream(DataStream):
     def __init__(self, stream_id: str):
@@ -90,15 +96,16 @@ class TransactionStream(DataStream):
                             values = values + [amount]
                         except Exception:
                             pass
-            
+
             count = len(values)
             net = sum(values) if values else 0
             self.total_operations = self.total_operations + count
             net_sign = "+" if net >= 0 else ""
-            return f"Transaction analysis: {count} operations, net flow: {net_sign}{net} units"
+            return (f"Transaction analysis: {count}",
+                    f"operations, net flow: {net_sign}{net} units")
         except Exception:
             return "Transaction analysis: invalid data"
-    
+
     def get_stats(self) -> Dict[str, Union[str, int, float]]:
         try:
             return {
@@ -109,6 +116,7 @@ class TransactionStream(DataStream):
             }
         except Exception:
             return {}
+
 
 class EventStream(DataStream):
     def __init__(self, stream_id: str):
@@ -122,10 +130,13 @@ class EventStream(DataStream):
         print(f"Processing event batch: {data_batch}")
 
         try:
-            error_count = len([event for event in data_batch if "error" in str(event).lower()])
-            
+            error_count = len(
+                [event for event in data_batch
+                    if "error" in str(event).lower()])
+
             self.total_events = self.total_events + len(data_batch)
-            return f"Event analysis: {len(data_batch)} events, {error_count} error detected"
+            return (f"Event analysis: {len(data_batch)} events,",
+                    f"{error_count} error detected")
         except Exception:
             return "Event analysis: invalid data"
 
@@ -136,11 +147,15 @@ class EventStream(DataStream):
             "total_events": self.total_events,
             "status": "ready"
         }
-    
-    def filter_data(self, data_batch: List[Any], criteria: Optional[str] = None) -> List[Any]:
+
+    def filter_data(
+            self, data_batch: List[Any],
+            criteria: Optional[str] = None) -> List[Any]:
         if criteria:
-            return [event for event in data_batch if criteria.lower() in str(event).lower()]
+            return [event for event in data_batch if criteria.lower()
+                    in str(event).lower()]
         return data_batch
+
 
 class StreamProcessor:
     def __init__(self, streams: List[DataStream]):
@@ -150,9 +165,15 @@ class StreamProcessor:
         print("\n=== Polymorphic Stream Processing ===")
         print("Processing mixed stream types through unified interface...\n")
 
-        sensor_count = sum([len(batch) for stream, batch in batches if isinstance(stream, SensorStream)])
-        transaction_count = sum([len(batch) for stream, batch in batches if isinstance(stream, TransactionStream)])
-        event_count = sum([len(batch) for stream, batch in batches if isinstance(stream, EventStream)])
+        sensor_count = sum(
+            [len(batch) for stream, batch in batches
+                if isinstance(stream, SensorStream)])
+        transaction_count = sum(
+            [len(batch) for stream, batch in batches
+                if isinstance(stream, TransactionStream)])
+        event_count = sum(
+            [len(batch) for stream, batch in batches
+                if isinstance(stream, EventStream)])
 
         output = [
             f"- Sensor data: {sensor_count} readings processed",
@@ -165,10 +186,10 @@ class StreamProcessor:
             print(line)
 
         print("\nStream filtering active: High-priority data only")
-        print("Filtered results: 2 critical sensor alerts, 1 large transaction")
+        print("Filtered results: 2 critical sensor",
+              "alerts, 1 large transaction")
 
         return output
-
 
 
 if __name__ == "__main__":
