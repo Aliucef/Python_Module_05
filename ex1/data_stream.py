@@ -48,7 +48,7 @@ class SensorStream(DataStream):
                             value = float(parts[1])
                             values = values + [value]
                         except Exception:
-                            pass
+                            return "Sensor analysis: invalid data"
 
             count = len(values)
             total = sum(values) if values else 0
